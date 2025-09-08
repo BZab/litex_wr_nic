@@ -560,6 +560,9 @@ def main():
     parser.add_argument("--build", action="store_true", help="Build bitstream.")
     parser.add_argument("--load",  action="store_true", help="Load bitstream.")
     parser.add_argument("--flash", action="store_true", help="Flash bitstream.")
+    parser.add_argument(
+        "--ftdi-serial", action="store_true", help="Specify FTDI iSerial."
+    )
 
     # Probes.
     # -------
@@ -607,13 +610,13 @@ def main():
     # Load FPGA.
     # ----------
     if args.load:
-        prog = soc.platform.create_programmer()
+        prog = soc.platform.create_programmer(ftdi_serial=args.ftdi_serial)
         prog.load_bitstream(builder.get_bitstream_filename(mode="flash"))
 
     # Flash FPGA.
     # -----------
     if args.flash:
-        prog = soc.platform.create_programmer()
+        prog = soc.platform.create_programmer(ftdi_serial=args.ftdi_serial)
         prog.flash(0x0000_0000, builder.get_bitstream_filename(mode="flash"))
         prog.flash(0x002e_0000, "firmware/sdb-wrpc.bin")
 

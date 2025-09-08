@@ -301,8 +301,8 @@ class Platform(Xilinx7SeriesPlatform):
             "set_property CONFIG_VOLTAGE 3.3 [current_design]",
         ]
 
-    def create_programmer(self, name="openocd"):
-        return OpenFPGALoader(cable="ft4232", fpga_part="xc7a35tcsg324", freq=20e6)
+    def create_programmer(self, name="openocd", ftdi_serial=None):
+        return OpenFPGALoader(cable="ft4232", fpga_part="xc7a35tcsg324", freq=20e6, ftdi_serial=ftdi_serial)
 
     def do_finalize(self, fragment):
         Xilinx7SeriesPlatform.do_finalize(self, fragment)

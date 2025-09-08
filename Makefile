@@ -36,14 +36,19 @@ else
 	VENVSUBDIR = bin
 endif
 
+# Paths portability in Makefiles among OSes:
+# https://skramm.blogspot.com/2013/04/writing-portable-makefiles.html
+
 # VENV_ACTIVATE = $(SOURCE) $(VENV)/$(VENVSUBDIR)/activate
 XLX_ENV_ACTIVATE = $(SOURCE) /opt/Xilinx/envset.sh
 
 # If more things need to be sourced, add them here
 PREP_ENV = $(XLX_ENV_ACTIVATE)
 
-# Paths portability in Makefiles among OSes:
-# https://skramm.blogspot.com/2013/04/writing-portable-makefiles.html
+# Convert ftdi serial variable to arg
+ifeq($(FTDI_SERIAL),)
+FTDI_ARG := --ftdi-serial $(FTDI_SERIAL)
+endif
 
 ## Show this help
 .PHONY: help
@@ -57,26 +62,26 @@ help: _help
 $(PY_VER_FILE):
 	pyenv local $(PYTHON_VER)
 
-## Build and load Spec A7 image
+## Build and load Spec A7 image, to specify the ftdi add: FTDI_SERIAL=<iSerial>
 .PHONY: SpecA7
 SpecA7: $(PY_VER_FILE)
-	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --build --load
+	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --build --load $(FTDI_ARG)
 
 ## Build Spec A7 image
 .PHONY: SpecA7build
 SpecA7build: $(PY_VER_FILE)
 	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --build
 
-## Load Spec A7 image
+## Load Spec A7 image, to specify the ftdi add: FTDI_SERIAL=<iSerial>
 .PHONY: SpecA7load
 SpecA7load: $(PY_VER_FILE)
-	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --load
+	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --load $(FTDI_ARG)
 
 
-## Flash Spec A7 image
+## Flash Spec A7 image, to specify the ftdi add: FTDI_SERIAL=<iSerial>
 .PHONY: SpecA7flash
 SpecA7flash: $(PY_VER_FILE)
-	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --flash
+	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --flash $(FTDI_ARG)
 
 .PHONY: SpecA7help
 SpecA7help: $(PY_VER_FILE)
