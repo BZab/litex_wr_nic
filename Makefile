@@ -46,8 +46,8 @@ XLX_ENV_ACTIVATE = $(SOURCE) /opt/Xilinx/envset.sh
 PREP_ENV = $(XLX_ENV_ACTIVATE)
 
 # Convert ftdi serial variable to arg
-ifeq($(FTDI_SERIAL),)
-FTDI_ARG := --ftdi-serial $(FTDI_SERIAL)
+ifneq ($(FTDI_SERIAL),)
+	FTDI_ARG := --ftdi-serial $(FTDI_SERIAL)
 endif
 
 ## Show this help
@@ -56,13 +56,15 @@ help: _help
 
 
 ## -- General targets --
+## To specify the ftdi add: FTDI_SERIAL=<iSerial>
+## after the target
 
 # https://github.com/enjoy-digital/litex_wr_nic#
 
 $(PY_VER_FILE):
 	pyenv local $(PYTHON_VER)
 
-## Build and load Spec A7 image, to specify the ftdi add: FTDI_SERIAL=<iSerial>
+## Build and load Spec A7 image
 .PHONY: SpecA7
 SpecA7: $(PY_VER_FILE)
 	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --build --load $(FTDI_ARG)
@@ -72,13 +74,13 @@ SpecA7: $(PY_VER_FILE)
 SpecA7build: $(PY_VER_FILE)
 	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --build
 
-## Load Spec A7 image, to specify the ftdi add: FTDI_SERIAL=<iSerial>
+## Load Spec A7 image
 .PHONY: SpecA7load
 SpecA7load: $(PY_VER_FILE)
 	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --load $(FTDI_ARG)
 
 
-## Flash Spec A7 image, to specify the ftdi add: FTDI_SERIAL=<iSerial>
+## Flash Spec A7 image
 .PHONY: SpecA7flash
 SpecA7flash: $(PY_VER_FILE)
 	$(PREP_ENV); $(PYTHON) ./spec_a7_wr_nic.py --flash $(FTDI_ARG)
