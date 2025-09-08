@@ -3,7 +3,6 @@ SHELL := /bin/bash
 VENV    = ./.venv
 PATHCACHE   = ./cache
 PATHPYCACHE = ./__pycache__
-REQUIREMENTS = ./requirements/base.txt
 PYTHON_VER = 3.10
 PY_VER_FILE = ./.python-version
 
