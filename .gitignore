@@ -1,1 +1,8 @@
 litex_wr_nic/firmware/wrpc-sw
+
+# Backups
+*~
+
+# Python
+__pycache__/
+*.py[codz]
