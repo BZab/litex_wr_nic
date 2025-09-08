@@ -560,9 +560,7 @@ def main():
     parser.add_argument("--build", action="store_true", help="Build bitstream.")
     parser.add_argument("--load",  action="store_true", help="Load bitstream.")
     parser.add_argument("--flash", action="store_true", help="Flash bitstream.")
-    parser.add_argument(
-        "--ftdi-serial", action="store_true", help="Specify FTDI iSerial."
-    )
+    parser.add_argument("--ftdi-serial", help="Specify FTDI iSerial.")
 
     # Probes.
     # -------
