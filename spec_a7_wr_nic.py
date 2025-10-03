@@ -112,7 +112,7 @@ class BaseSoC(LiteXWRNICSoC):
 
         # Sync-Out Parameters.
         # --------------------
-        with_pps_out_freerunning     = False,
+        bypass_pps_out_coarse_delay  = False,
         # PPS Out (Adjusted over JTAGBone with test/test_delay.py).
         pps_out_macro_delay_default  = 62499998, # 16ns taps (Up to 2**32-1 taps).
         pps_out_coarse_delay_default =        1, #  2ns taps (64 taps).
@@ -352,7 +352,7 @@ class BaseSoC(LiteXWRNICSoC):
             pps_out_active_timer = ClockDomainsRenamer("wr")(pps_out_active_timer)
             self.submodules += pps_out_active_timer
             self.comb += [
-                pps_out_active_timer.wait.eq(~self.pps_out),
+                pps_out_active_timer.wait.eq(~self.pps_out_pulse),
                 pps_out_valid.eq(~pps_out_active_timer.done),
             ]
 
@@ -361,7 +361,7 @@ class BaseSoC(LiteXWRNICSoC):
             pps_out_pulse_sel = Signal()
             self.comb += [
                 # Use PPS from WR when active.
-                If(pps_out_valid | (~with_pps_out_freerunning),
+                If(pps_out_valid,
                     pps_out_pulse_sel.eq(self.pps_out_pulse)
                 # Else Switch back to Free-Running PPS.
                 ).Else(
@@ -381,7 +381,7 @@ class BaseSoC(LiteXWRNICSoC):
             # ---------------
 
             # Clk10M Macro Delay.
-            clk10m_out_macro_delay = Signal()
+            clk10m_out_macro_delay  = Signal()
             self.clk10m_macro_delay = MacroDelay(
                 pulse_i = pps_out_pulse_sel,
                 pulse_o = clk10m_out_macro_delay,
@@ -390,7 +390,7 @@ class BaseSoC(LiteXWRNICSoC):
             )
 
             # Clk10M Generator.
-            clk10m_out_gen = Signal(8)
+            clk10m_out_gen  = Signal(8)
             self.clk10m_gen = Clk10MGenerator(
                 pulse_i  = clk10m_out_macro_delay,
                 clk10m_o = clk10m_out_gen,
@@ -398,7 +398,7 @@ class BaseSoC(LiteXWRNICSoC):
             )
 
             # Clk10M Coarse Delay.
-            clk10m_out_coarse_delay = Signal()
+            clk10m_out_coarse_delay      = Signal()
             self.clk10m_out_coarse_delay = CoarseDelay(
                 rst = ~syncout_pll.locked,
                 i   = clk10m_out_gen,
@@ -420,7 +420,7 @@ class BaseSoC(LiteXWRNICSoC):
             # ------------
 
             # PPS Macro Delay.
-            pps_out_macro_delay = Signal()
+            pps_out_macro_delay      = Signal()
             self.pps_out_macro_delay = MacroDelay(
                 pulse_i = pps_out_pulse_sel,
                 pulse_o = pps_out_macro_delay,
@@ -439,7 +439,7 @@ class BaseSoC(LiteXWRNICSoC):
             )
 
             # PPS Coarse Delay.
-            pps_out_coarse_delay   = Signal()
+            pps_out_coarse_delay      = Signal()
             self.pps_out_coarse_delay = CoarseDelay(
                 rst = ~syncout_pll.locked,
                 i   = pps_out_gen,
@@ -452,7 +452,7 @@ class BaseSoC(LiteXWRNICSoC):
             # PPS Out.
             pps_out_pads = platform.request("pps_out")
             self.specials += DifferentialOutput(
-                i   = pps_out_coarse_delay,
+                i   = pps_out_gen if bypass_pps_out_coarse_delay else pps_out_coarse_delay,
                 o_p = pps_out_pads.p,
                 o_n = pps_out_pads.n,
             )
