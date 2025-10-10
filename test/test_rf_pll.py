@@ -93,7 +93,7 @@ def main():
     args = parser.parse_args()
 
     # Open the bus connection.
-    bus = RemoteClient()
+    bus = RemoteClient(csr_csv="test/csr.csv")
     bus.open()
 
     # Initialize LMX2572 controller.
