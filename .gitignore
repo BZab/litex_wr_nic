@@ -1,4 +1,5 @@
 litex_wr_nic/firmware/wrpc-sw
+build/
 
 # Backups
 *~
@@ -6,3 +7,6 @@ litex_wr_nic/firmware/wrpc-sw
 # Python
 __pycache__/
 *.py[codz]
+
+# Git
+*.orig
